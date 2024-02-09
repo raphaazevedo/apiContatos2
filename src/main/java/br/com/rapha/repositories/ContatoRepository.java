@@ -92,5 +92,29 @@ public class ContatoRepository {
 		
 		return lista;
 	}
-	
+	public Contato findById(UUID id)throws Exception{
+		
+		Connection connection = ConnectionFactory.getConnection();
+		
+		PreparedStatement statement = connection.prepareStatement
+				("SELECT * FROM contato WHERE id = ?");
+		
+		statement.setObject(1, id);
+		
+		ResultSet resultSet = statement.executeQuery();
+		
+		Contato contato = null;
+		
+		if (resultSet.next()) {
+			
+			contato = new Contato();
+			
+			contato.setId(UUID.fromString(resultSet.getString("id")));
+			contato.setNome(resultSet.getString("nome"));
+			
+		}
+		
+		connection.close();
+		return contato;
+	}
 }

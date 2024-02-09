@@ -73,5 +73,32 @@ public class CategoriaRepository {
 		
 		
 	}
+	public Categoria findById(UUID id)throws Exception{
+		
+		
+		
+		Connection connection = ConnectionFactory.getConnection();
+		
+		PreparedStatement statement = connection.prepareStatement
+				("SELECT * FROM categoria where id = ?");
+
+		statement.setObject(1, id);
+		ResultSet resultSet = statement.executeQuery();
+		
+		Categoria categoria = null;
+		
+		if(resultSet.next()) {
+			
+			categoria = new Categoria();
+			
+			categoria.setId(UUID.fromString(resultSet.getString("id")));
+			categoria.setNome(resultSet.getString("nome"));
+			
+		}
+		
+		connection.close();
+		
+		return categoria;
+	}
 
 }
