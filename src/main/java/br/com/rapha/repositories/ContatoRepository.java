@@ -108,9 +108,14 @@ public class ContatoRepository {
 		if (resultSet.next()) {
 			
 			contato = new Contato();
+			contato.setCategoria(new Categoria());
 			
 			contato.setId(UUID.fromString(resultSet.getString("id")));
 			contato.setNome(resultSet.getString("nome"));
+			contato.setTelefone(resultSet.getString("telefone"));
+			contato.setEmail(resultSet.getString("email"));
+			contato.getCategoria().setId(UUID.fromString(resultSet.getString("categoria_id")));
+			
 			
 		}
 		
