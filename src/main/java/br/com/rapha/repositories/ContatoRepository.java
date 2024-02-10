@@ -67,7 +67,11 @@ public class ContatoRepository {
 		Connection connection = ConnectionFactory.getConnection();
 		
 		PreparedStatement statement = connection.prepareStatement
-				("SELECT * FROM contato ORDER BY nome");
+				("select c.id, c.nome, c.telefone, c.email, p.id as id_categoria, p.nome as nome_categoria "
+						+ "from contato  c "
+						+ "inner join categoria p "
+						+ "on c.categoria_id = p.id "
+						+ "order by c.nome");
 		
 		ResultSet resultSet = statement.executeQuery();
 		
@@ -82,7 +86,8 @@ public class ContatoRepository {
 			contato.setNome(resultSet.getString("nome"));
 			contato.setTelefone(resultSet.getString("telefone"));
 			contato.setEmail(resultSet.getString("email"));
-			contato.getCategoria().setId(UUID.fromString(resultSet.getString("categoria_id")));
+			contato.getCategoria().setId(UUID.fromString(resultSet.getString("id_categoria")));
+			contato.getCategoria().setNome(resultSet.getString("nome_categoria"));
 			
 			lista.add(contato);
 			
@@ -97,7 +102,11 @@ public class ContatoRepository {
 		Connection connection = ConnectionFactory.getConnection();
 		
 		PreparedStatement statement = connection.prepareStatement
-				("SELECT * FROM contato WHERE id = ?");
+				("select c.id, c.nome, c.telefone, c.email, p.id as id_categoria, p.nome as nome_categoria "
+						+ "from contato  c "
+						+ "inner join categoria p "
+						+ "on c.categoria_id = p.id "
+						+ "where c.id = ?");
 		
 		statement.setObject(1, id);
 		
@@ -114,7 +123,8 @@ public class ContatoRepository {
 			contato.setNome(resultSet.getString("nome"));
 			contato.setTelefone(resultSet.getString("telefone"));
 			contato.setEmail(resultSet.getString("email"));
-			contato.getCategoria().setId(UUID.fromString(resultSet.getString("categoria_id")));
+			contato.getCategoria().setId(UUID.fromString(resultSet.getString("id_categoria")));
+			contato.getCategoria().setNome(resultSet.getString("nome_categoria"));
 			
 			
 		}
