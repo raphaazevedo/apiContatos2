@@ -18,6 +18,7 @@ import br.com.rapha.entities.Categoria;
 import br.com.rapha.entities.Contato;
 import br.com.rapha.repositories.CategoriaRepository;
 import br.com.rapha.repositories.ContatoRepository;
+import jakarta.validation.Valid;
 
 @RestController 
 @RequestMapping(value = "/api/contatos")
@@ -43,7 +44,7 @@ public class ContatoController {
 		
 	}
 	@PostMapping
-	public  String post(@RequestBody ContatoPostRequestDto dto) {
+	public  String post(@RequestBody @Valid ContatoPostRequestDto dto) {
 		
 		try {
 			
@@ -79,7 +80,7 @@ public class ContatoController {
 		
 	}
 	@PutMapping
-	public String put(@RequestBody ContatoPutRequestDto dto) {
+	public String put(@RequestBody @Valid ContatoPutRequestDto dto) {
 		
 		try {
 			ContatoRepository contatoRepository = new ContatoRepository();
