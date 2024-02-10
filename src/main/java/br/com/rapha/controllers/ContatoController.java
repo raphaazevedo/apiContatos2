@@ -3,6 +3,7 @@ package br.com.rapha.controllers;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,26 +26,80 @@ import jakarta.validation.Valid;
 public class ContatoController {
 
 	@GetMapping
-	public List<Contato> getAll()throws Exception{
+	public ResponseEntity<List<Contato>> getAll()throws Exception{
 		
-		ContatoRepository contatoRepository = new ContatoRepository();
+		try {
+			
+			
+			ContatoRepository contatoRepository = new ContatoRepository();
+			
+			List<Contato> contatos = contatoRepository.findAll();	
+			
+			if(contatos.size() == 0) {
+				
+				//HTTP 204 NO CONTENT
+				return ResponseEntity.status(204)
+						.body(null);
+				
+			}
+			
+			// HTTP 200 - OK
+			return ResponseEntity.status(200)
+					.body(contatos);
+			
+			
+			
+		} catch (Exception e) {
+			
+			// HTTP 500 INTERNAL ERROR SERVER
+			return ResponseEntity.status(500)
+					.body(null);
+			
+		}
 		
-		return contatoRepository.findAll();
+		
+		
 		
 	}
 	
 	@GetMapping("{id}")
-	public Contato getById(@PathVariable("id") UUID id)throws Exception{
+	public ResponseEntity<Contato> getById(@PathVariable("id") UUID id)throws Exception{
 		
-		ContatoRepository contatoRepository = new ContatoRepository();
+		try {
+			
+			
+			ContatoRepository contatoRepository = new ContatoRepository();
+			
+			Contato contato = contatoRepository.findById(id);
+			
+			
+			
+			if (contato == null) {
+				
+				//HTTP 204 - NO CONTENT
+				return ResponseEntity.status(204)
+						.body(null);
+				
+			}
+			// HTTP 200 - OK
+			return ResponseEntity.status(200)
+					.body(contato);
+			
+			
+		} catch (Exception e) {
+
+			
+			// HTTP 500 INTERNAL ERROR SERVER
+			return ResponseEntity.status(500)
+					.body(null);
+		}
 		
 		
-		return contatoRepository.findById(id);
 		
 		
 	}
 	@PostMapping
-	public  String post(@RequestBody @Valid ContatoPostRequestDto dto) {
+	public ResponseEntity<String> post(@RequestBody @Valid ContatoPostRequestDto dto) {
 		
 		try {
 			
@@ -60,7 +115,11 @@ public class ContatoController {
 			Categoria categoria = categoriaRepository.findById(dto.getCategoria_id());
 			
 			if(categoria == null) {
-				throw new Exception("Categoria inexistente!");
+				
+				// BAD REQUEST HTTP 400
+				return ResponseEntity.status(400)
+						.body("Categoria não encontrada, informe o ID.");
+				
 			}
 			
 			contato.setCategoria(categoria);
@@ -69,18 +128,23 @@ public class ContatoController {
 			
 			contatoRepository.insert(contato);
 			
-			return "Contato cadastrado com sucesso!";
+				//HTTP 201 CREATED
+				return ResponseEntity.status(201)
+						.body("Contato cadastrado com sucesso!");
+			
 			
 			
 			
 		}catch (Exception e) {
 
-			return e.getMessage();
+			return ResponseEntity.status(500)
+					.body(e.getMessage());
+			
 		}
 		
 	}
 	@PutMapping
-	public String put(@RequestBody @Valid ContatoPutRequestDto dto) {
+	public ResponseEntity<String> put(@RequestBody @Valid ContatoPutRequestDto dto) {
 		
 		try {
 			ContatoRepository contatoRepository = new ContatoRepository();
@@ -88,7 +152,11 @@ public class ContatoController {
 			Contato contato = contatoRepository.findById(dto.getId());
 			
 			if (contato == null) {
-				throw new Exception ("Contato não encontrado, verifique o ID");
+				
+				//BAD REQUEST 400
+				return ResponseEntity.status(400)
+						.body("Contato não encontrado, verifique o ID");
+				
 			}
 			
 			CategoriaRepository categoriaRepository = new CategoriaRepository();
@@ -96,7 +164,10 @@ public class ContatoController {
 			
 			if (categoria == null) {
 				
-				throw new Exception ("Categoria não encontrada, verifique o ID");
+				//BAD REQUEST 400
+				return ResponseEntity.status(400)
+						.body("Categoria não encontrada, verifique o ID");
+
 			}
 			
 			contato.setNome(dto.getNome());
@@ -106,17 +177,21 @@ public class ContatoController {
 			
 			contatoRepository.update(contato);
 			
-			return "Contado atualizado com sucesso!!";
-			
+			// HTTP 200 - OK
+			return ResponseEntity.status(200)
+					.body("Contado atualizado com sucesso!!");
+									
 		} catch (Exception e) {
 
-
-			return e.getMessage();
+			// HTTP 500 INTERNAL ERROR SERVER
+			return ResponseEntity.status(500)
+					.body(e.getMessage());
+			
 		}
 		
 	}
 	@DeleteMapping("{id}")
-	public String delete(@PathVariable("id") UUID id) {
+	public ResponseEntity<String> delete(@PathVariable("id") UUID id) {
 		
 		try {
 			
@@ -125,16 +200,25 @@ public class ContatoController {
 			
 			if (contato == null) {
 				
-				throw new Exception("Contato não encontrado, verifique o ID.");
+				// HTTP 400 - BAD REQUEST
+				return ResponseEntity.status(400)
+						.body("Contato não encontrado, verifique o ID.");
+				
 				
 			}
 			contatoRepository.delete(contato);
 			
-			return "Contato excluido com sucesso!!";
+			//HTTP 200 - OK
+			return ResponseEntity.status(200)
+					.body("Contato excluido com sucesso!!");
+			
 			
 			
 		} catch (Exception e) {
-			return e.getMessage();
+			
+			//HTTP 500 INTERNAL ERROR SERVER
+			return ResponseEntity.status(500)
+					.body(e.getMessage());
 		}
 		
 	}

@@ -3,6 +3,7 @@ package br.com.rapha.controllers;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,20 +17,60 @@ import br.com.rapha.repositories.CategoriaRepository;
 public class CategoriaController {
 	
 	@GetMapping
-	public List<Categoria> getAll()throws Exception{
+	public ResponseEntity<List<Categoria>> getAll()throws Exception{
 		
-		CategoriaRepository categoriaRepository = new CategoriaRepository();
+		try {
+			CategoriaRepository categoriaRepository = new CategoriaRepository();
+			
+			List<Categoria> categorias = categoriaRepository.findAll();
+			
+			if(categorias.size() == 0) {
+				
+				ResponseEntity.status(204)
+				.body(null);
+				
+			}
+			
+			return ResponseEntity.status(200)
+					.body(categorias);
+			
+			
+						
+		} catch (Exception e) {
+
+			return ResponseEntity.status(500)
+					.body(null);
+			
+		}
 		
-		return categoriaRepository.findAll();
+		
 	}
 	@GetMapping("{id}")
-	public Categoria findById(@PathVariable("id") UUID id)throws Exception{
-		
-		CategoriaRepository categoriaRepository = new CategoriaRepository();
+	public ResponseEntity<Categoria> findById(@PathVariable("id") UUID id)throws Exception{
 		
 		
+		try {
+			
+			CategoriaRepository categoriaRepository = new CategoriaRepository();
+			
+			Categoria categoria = categoriaRepository.findById(id);
+			
+			if (categoria == null) {
+				
+				return ResponseEntity.status(204).body(null);
+			}
+			
+			return ResponseEntity.status(200).body(categoria);
+			
+		} catch (Exception e) {
+			
+			return ResponseEntity.status(500).body(null);
+			
+		}
 		
-		return categoriaRepository.findById(id);
+		
+		
+		
 		
 		
 	}
